@@ -1,11 +1,11 @@
 import React from 'react';
 import {Post} from '../models/Post';
-import {Filters} from '../models/Filters';
+import {Filter} from '../models/Filter';
 
 interface FilterBarProps {
-  filters: Filters;
+  filters: Filter;
   residenceOptions: string[];
-  setFilters: (filters: Filters) => void;
+  setFilters: (filters: Filter) => void;
 }
 
 const FilterBar: React.FC<FilterBarProps> = ({ filters, residenceOptions, setFilters }) => {
@@ -35,7 +35,6 @@ const FilterBar: React.FC<FilterBarProps> = ({ filters, residenceOptions, setFil
         <option value="Female">Female</option>
       </select>
       <input type="number" name="minAge" value={filters.minAge} onChange={handleFilterChange} placeholder="Minimum Age" />
-      <input name="duration" value={filters.duration} onChange={handleFilterChange} placeholder="Duration" />
       <input type="date" name="startDate" value={filters.startDate} onChange={handleFilterChange} placeholder="Start Date" />
       <input type="date" name="endDate" value={filters.endDate} onChange={handleFilterChange} placeholder="End Date" />
     </div>

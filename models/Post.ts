@@ -10,6 +10,8 @@ export interface Post {
     rent?: number;
     gender: string[];
     residence: Residence;
+    startDate: Date;
+    endDate: Date;
   }
 
   export interface SubletPost extends Post {

@@ -1,12 +1,13 @@
+'use client'
+
 import React, { useEffect, useState } from 'react';
 import api from '../utils/api';
 import Navbar from '../components/Navbar';
-
-interface UserProfile {
-  username: string;
-  name: string;
-  email: string;
-}
+import {User} from '../models/User';
+import {Filter} from '../models/Filter';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../store';
+import { useRouter } from 'next/router';
 
 interface UserPost {
   _id: string;
@@ -24,14 +25,28 @@ interface UserPost {
 }
 
 const ProfilePage: React.FC = () => {
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const router = useRouter();
+  
+  const isLoggedIn = typeof window !== 'undefined' && useSelector((state: RootState) => state.user.isLoggedIn);
+  if (!isLoggedIn){
+    router.push('/login')
+  }
+  const user = useSelector((state: RootState) => state.user.user);
+  console.log(user)
+  console.log(isLoggedIn)
+
+  const [userProfile, setUserProfile] = useState<User | null>(null);
   const [userPosts, setUserPosts] = useState<UserPost[]>([]);
+
 
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const response = await api.get('/api/users/profile');
-        setUserProfile(response.data);
+        const response = await api.get('/api/auth/whoami');
+        if(!response.data.user){
+          throw new Error();
+        }
+        setUserProfile(response.data.user);
       } catch (error) {
         console.error('Error fetching user profile:', error);
       }
@@ -39,15 +54,18 @@ const ProfilePage: React.FC = () => {
 
     const fetchUserPosts = async () => {
       try {
-        const response = await api.get('/api/posts/user');
-        setUserPosts(response.data);
+        const filter:Filter = {author: userProfile?._id}
+        const response = await api.get('/api/posts/', { params: filter });
+        setUserPosts(response.data); 
       } catch (error) {
         console.error('Error fetching user posts:', error);
       }
     };
 
     fetchUserProfile();
-    fetchUserPosts();
+    if(userProfile){
+      fetchUserPosts();
+    }
   }, []);
 
   return (
@@ -57,8 +75,10 @@ const ProfilePage: React.FC = () => {
         {userProfile && (
           <div className="user-info">
             <h2>{userProfile.name}'s Profile</h2>
-            <p>Username: {userProfile.username}</p>
             <p>Email: {userProfile.email}</p>
+            {userProfile.major && (<p>Major: {userProfile.major}</p>)}
+            {userProfile.year && (<p>Year: {userProfile.year?.toString()}</p>)}
+            {userProfile.bio && (<p>Bio: {userProfile.bio}</p>)}
           </div>
         )}
         <div className="user-posts">

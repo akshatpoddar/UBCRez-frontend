@@ -1,10 +1,10 @@
-export interface Filters {
+export interface Filter {
+    author?: string;
     category?: string;
     residence?: string;
     roomType?: string;
     gender?: string;
     minAge?: string;
-    duration?: string;
     startDate?: string;
     endDate?: string;
   }

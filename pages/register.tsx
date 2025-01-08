@@ -2,9 +2,9 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import api from '../utils/api';
 import { useRouter } from 'next/router';
+import Navbar from '@/components/Navbar';
 
 type RegisterFormInputs = {
-  username: string;
   name: string;
   email: string;
   password: string;
@@ -16,15 +16,19 @@ const RegisterPage: React.FC = () => {
 
   const onSubmit = async (data: RegisterFormInputs) => {
     try {
-      await api.post('/signup', data);
+      const response = await api.post('/signup', data);
+      if(response.status == 400){
+        throw new Error(response.data.message)
+      }
       router.push('/login');
-    } catch (error) {
+    } catch (error: any) {
       alert('Registration failed');
     }
   };
 
   return (
     <div>
+      <Navbar/>
       <h2>Register</h2>
       <form onSubmit={handleSubmit(onSubmit)}>
         <input {...register('name')} placeholder="Full Name" required />
